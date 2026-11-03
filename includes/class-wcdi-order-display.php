@@ -26,6 +26,33 @@ class WCDI_Order_Display {
 	}
 
 	/**
+	 * Whether WooCommerce prints this order's value by itself.
+	 *
+	 * Values entered in the Checkout block are stored in WooCommerce's
+	 * additional-fields meta, and WooCommerce renders that meta itself: the admin
+	 * shipping section (CheckoutFieldsAdmin::admin_order_fields()), the order
+	 * details template (CheckoutFieldsFrontend) and order emails (WC_Emails).
+	 * Printing it here as well would show the same field twice.
+	 *
+	 * Classic-checkout values live in our own meta key, which WooCommerce never
+	 * renders, so those are always printed by this class.
+	 *
+	 * @param mixed $order Order object.
+	 * @return bool
+	 */
+	public static function wc_renders_field( $order ) {
+		if ( ! $order instanceof WC_Order ) {
+			return false;
+		}
+
+		if ( '' === (string) $order->get_meta( WCDI_Field_Definition::BLOCK_META_KEY ) ) {
+			return false;
+		}
+
+		return class_exists( '\Automattic\WooCommerce\Blocks\Domain\Services\CheckoutFieldsAdmin' );
+	}
+
+	/**
 	 * Show the value on the admin order edit screen.
 	 *
 	 * HPOS and legacy post-based screens both fire this hook.
@@ -34,6 +61,10 @@ class WCDI_Order_Display {
 	 * @return void
 	 */
 	public function render_admin( $order ) {
+		if ( self::wc_renders_field( $order ) ) {
+			return;
+		}
+
 		$value = WCDI_Field_Definition::get_order_value( $order );
 
 		if ( '' === $value ) {
@@ -56,6 +87,10 @@ class WCDI_Order_Display {
 	 * @return void
 	 */
 	public function render_customer( $order ) {
+		if ( self::wc_renders_field( $order ) ) {
+			return;
+		}
+
 		$value = WCDI_Field_Definition::get_order_value( $order );
 
 		if ( '' === $value ) {
@@ -81,6 +116,10 @@ class WCDI_Order_Display {
 	 */
 	public function render_email( $order, $sent_to_admin = false, $plain_text = false ) {
 		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
+
+		if ( self::wc_renders_field( $order ) ) {
 			return;
 		}
 

@@ -37,6 +37,18 @@ if ( ! function_exists( 'wp_unslash' ) ) {
 	}
 }
 
+if ( ! function_exists( 'esc_html' ) ) {
+	function esc_html( $text ) {
+		return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
+	}
+}
+
+if ( ! function_exists( 'wp_kses_post' ) ) {
+	function wp_kses_post( $text ) {
+		return (string) $text;
+	}
+}
+
 if ( ! class_exists( 'WP_Error' ) ) {
 	class WP_Error { // phpcs:ignore
 		public $code;
@@ -80,6 +92,7 @@ if ( ! function_exists( 'woocommerce_register_additional_checkout_field' ) ) {
 require_once dirname( __DIR__ ) . '/includes/class-wcdi-field-definition.php';
 require_once dirname( __DIR__ ) . '/includes/class-wcdi-blocks-checkout.php';
 require_once dirname( __DIR__ ) . '/includes/class-wcdi-classic-checkout.php';
+require_once dirname( __DIR__ ) . '/includes/class-wcdi-order-display.php';
 
 $GLOBALS['wcdi_checks']   = 0;
 $GLOBALS['wcdi_failures'] = 0;
@@ -164,6 +177,54 @@ wcdi_assert( '' === WCDI_Field_Definition::get_order_value( $classic_order ), 'm
 
 unset( $_POST[ WCDI_Field_Definition::CLASSIC_FIELD_NAME ] );
 wcdi_assert( array( 'billing_first_name' => 'Ada' ) === $classic->add_posted_data( array( 'billing_first_name' => 'Ada' ) ), 'post data untouched when field is absent' );
+
+$display = new WCDI_Order_Display();
+
+$classic_display_order = new WC_Order();
+$classic_display_order->seed_meta( WCDI_Field_Definition::CLASSIC_META_KEY, 'Ring the bell twice' );
+
+wcdi_assert( false === WCDI_Order_Display::wc_renders_field( $classic_display_order ), 'classic value is not owned by WooCommerce' );
+
+ob_start();
+$display->render_admin( $classic_display_order );
+$admin_output = ob_get_clean();
+wcdi_assert( 1 === substr_count( $admin_output, 'Delivery instructions' ), 'classic value printed once in admin' );
+
+$block_display_order = new WC_Order();
+$block_display_order->seed_meta( WCDI_Field_Definition::BLOCK_META_KEY, 'Testing Additional order information' );
+
+wcdi_assert( false === WCDI_Order_Display::wc_renders_field( $block_display_order ), 'block value not owned while the WooCommerce service is absent' );
+
+ob_start();
+$display->render_admin( $block_display_order );
+wcdi_assert( 1 === substr_count( ob_get_clean(), 'Delivery instructions' ), 'block value printed by the plugin without WooCommerce service' );
+
+if ( ! class_exists( 'Automattic\WooCommerce\Blocks\Domain\Services\CheckoutFieldsAdmin' ) ) {
+	eval( 'namespace Automattic\WooCommerce\Blocks\Domain\Services; class CheckoutFieldsAdmin {}' );
+}
+
+wcdi_assert( true === WCDI_Order_Display::wc_renders_field( $block_display_order ), 'block value detected as owned by WooCommerce' );
+wcdi_assert( false === WCDI_Order_Display::wc_renders_field( $classic_display_order ), 'classic value still not owned by WooCommerce' );
+
+ob_start();
+$display->render_admin( $block_display_order );
+wcdi_assert( '' === ob_get_clean(), 'admin output suppressed for block values WooCommerce already prints' );
+
+ob_start();
+$display->render_customer( $block_display_order );
+wcdi_assert( '' === ob_get_clean(), 'customer output suppressed for block values WooCommerce already prints' );
+
+ob_start();
+$display->render_email( $block_display_order, false, true );
+wcdi_assert( '' === ob_get_clean(), 'email output suppressed for block values WooCommerce already prints' );
+
+ob_start();
+$display->render_admin( $classic_display_order );
+wcdi_assert( 1 === substr_count( ob_get_clean(), 'Delivery instructions' ), 'classic value still printed once in admin' );
+
+ob_start();
+$display->render_email( $classic_display_order, false, true );
+wcdi_assert( 1 === substr_count( ob_get_clean(), 'Ring the bell twice' ), 'classic value still printed in emails' );
 
 printf( "\n%d checks, %d failure(s)\n", $GLOBALS['wcdi_checks'], $GLOBALS['wcdi_failures'] );
 
