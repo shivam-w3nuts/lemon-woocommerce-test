@@ -41,7 +41,7 @@ class WCDI_Field_Definition {
 	 * @return string
 	 */
 	public static function label() {
-		return __( 'Delivery instructions', 'woocommerce-delivery-instructions' );
+		return __( 'Delivery notes', 'woocommerce-delivery-instructions' );
 	}
 
 	/**

@@ -8,11 +8,11 @@ Stable tag: 1.0.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Adds an optional delivery instructions field to WooCommerce checkout (classic and Checkout block) and shows it in admin and customer order details.
+Adds an optional delivery notes field to WooCommerce checkout (classic and Checkout block) and shows it in admin and customer order details.
 
 == Description ==
 
-This plugin adds a single optional text field, "Delivery instructions", to checkout.
+This plugin adds a single optional text field, "Delivery notes", to checkout.
 
 * Works with the WooCommerce **Checkout block** (uses the Additional Checkout Fields API, WooCommerce 8.9+).
 * Works with the **classic shortcode checkout** (rendered below the order notes).
@@ -25,7 +25,7 @@ This plugin adds a single optional text field, "Delivery instructions", to check
 
 1. Copy this folder to `wp-content/plugins/woocommerce-delivery-instructions`.
 2. Activate **WooCommerce Delivery Instructions** in Plugins.
-3. Check out with either checkout type and enter a value in the "Delivery instructions" field.
+3. Check out with either checkout type and enter a value in the "Delivery notes" field.
 
 == Frequently Asked Questions ==
 

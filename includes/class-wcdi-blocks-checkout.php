@@ -97,7 +97,7 @@ class WCDI_Blocks_Checkout {
 				'wcdi-delivery-instructions-too-long',
 				sprintf(
 					/* translators: %d: maximum number of characters. */
-					__( 'Delivery instructions must be %d characters or fewer.', 'woocommerce-delivery-instructions' ),
+					__( 'Delivery notes must be %d characters or fewer.', 'woocommerce-delivery-instructions' ),
 					WCDI_Field_Definition::MAX_LENGTH
 				)
 			);

@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       WooCommerce Delivery Instructions
  * Plugin URI:        https://github.com/shivam-w3nuts/lemon-woocommerce-test
- * Description:       Adds an optional "Delivery instructions" field to checkout (classic and Checkout block), stores it with the order, and shows it in admin and customer order details.
+ * Description:       Adds an optional "Delivery notes" field to checkout (classic and Checkout block), stores it with the order, and shows it in admin and customer order details.
  * Version:           1.0.0
  * Requires at least: 6.4
  * Requires PHP:      7.4

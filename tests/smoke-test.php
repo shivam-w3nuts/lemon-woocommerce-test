@@ -188,7 +188,7 @@ wcdi_assert( false === WCDI_Order_Display::wc_renders_field( $classic_display_or
 ob_start();
 $display->render_admin( $classic_display_order );
 $admin_output = ob_get_clean();
-wcdi_assert( 1 === substr_count( $admin_output, 'Delivery instructions' ), 'classic value printed once in admin' );
+wcdi_assert( 1 === substr_count( $admin_output, 'Delivery notes' ), 'classic value printed once in admin' );
 
 $block_display_order = new WC_Order();
 $block_display_order->seed_meta( WCDI_Field_Definition::BLOCK_META_KEY, 'Testing Additional order information' );
@@ -197,7 +197,7 @@ wcdi_assert( false === WCDI_Order_Display::wc_renders_field( $block_display_orde
 
 ob_start();
 $display->render_admin( $block_display_order );
-wcdi_assert( 1 === substr_count( ob_get_clean(), 'Delivery instructions' ), 'block value printed by the plugin without WooCommerce service' );
+wcdi_assert( 1 === substr_count( ob_get_clean(), 'Delivery notes' ), 'block value printed by the plugin without WooCommerce service' );
 
 if ( ! class_exists( 'Automattic\WooCommerce\Blocks\Domain\Services\CheckoutFieldsAdmin' ) ) {
 	eval( 'namespace Automattic\WooCommerce\Blocks\Domain\Services; class CheckoutFieldsAdmin {}' );
@@ -220,7 +220,7 @@ wcdi_assert( '' === ob_get_clean(), 'email output suppressed for block values Wo
 
 ob_start();
 $display->render_admin( $classic_display_order );
-wcdi_assert( 1 === substr_count( ob_get_clean(), 'Delivery instructions' ), 'classic value still printed once in admin' );
+wcdi_assert( 1 === substr_count( ob_get_clean(), 'Delivery notes' ), 'classic value still printed once in admin' );
 
 ob_start();
 $display->render_email( $classic_display_order, false, true );
